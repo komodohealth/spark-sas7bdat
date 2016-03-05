@@ -16,6 +16,6 @@ class SasInputFormat extends FileInputFormat[NullWritable, Array[Object]] {
   }
 
   override def isSplitable(fs: FileSystem, filename: Path): Boolean = {
-    new CompressionCodecFactory(fs.getConf).getCodec(filename) == null
+    false
   }
 }

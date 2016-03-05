@@ -872,13 +872,18 @@ public class SasFileParser {
         }
         switch (currentPageType) {
             case PAGE_META_TYPE:
-                SubheaderPointer currentSubheaderPointer =
-                        currentPageDataSubheaderPointers.get(currentRowOnPageIndex++);
-                subheaderIndexToClass.get(SUBHEADER_INDEXES.DATA_SUBHEADER_INDEX).processSubheader(
-                        currentSubheaderPointer.offset, currentSubheaderPointer.length);
-                if (currentRowOnPageIndex == currentPageDataSubheaderPointers.size()) {
+                if(currentPageDataSubheaderPointers.size() ==0) {
                     readNextPage();
                     currentRowOnPageIndex = 0;
+                } else {
+                    SubheaderPointer currentSubheaderPointer =
+                            currentPageDataSubheaderPointers.get(currentRowOnPageIndex++);
+                    subheaderIndexToClass.get(SUBHEADER_INDEXES.DATA_SUBHEADER_INDEX).processSubheader(
+                            currentSubheaderPointer.offset, currentSubheaderPointer.length);
+                    if (currentRowOnPageIndex == currentPageDataSubheaderPointers.size()) {
+                        readNextPage();
+                        currentRowOnPageIndex = 0;
+                    }
                 }
                 break;
             case PAGE_MIX_TYPE:
@@ -913,10 +918,15 @@ public class SasFileParser {
      * @throws IOException if reading from the {@link SasFileParser#sasFileStream} stream is impossible.
      */
     void readNextPage() throws IOException {
-        processNextPage();
-        while(currentPageType != PAGE_META_TYPE && currentPageType != PAGE_MIX_TYPE &&
-                currentPageType != PAGE_DATA_TYPE) {
+        try {
             processNextPage();
+            while(currentPageType != PAGE_META_TYPE && currentPageType != PAGE_MIX_TYPE &&
+                    currentPageType != PAGE_DATA_TYPE) {
+                processNextPage();
+
+            }
+        } catch (EOFException e) {
+            return;
         }
     }
 
@@ -925,11 +935,8 @@ public class SasFileParser {
         int bitOffset = sasFileProperties.isU64() ? PAGE_BIT_OFFSET_X64 : PAGE_BIT_OFFSET_X86;
         currentPageDataSubheaderPointers.clear();
 
-        try {
-            sasFileStream.readFully(cachedPage, 0, sasFileProperties.getPageLength());
-        } catch (EOFException e) {
-            return;
-        }
+        sasFileStream.readFully(cachedPage, 0, sasFileProperties.getPageLength());
+
 
         readPageHeader();
         if (currentPageType == PAGE_META_TYPE) {
