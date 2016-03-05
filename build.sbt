@@ -2,7 +2,7 @@ name := "spark-sas7bdat"
 version := "1.1.4"
 organization := "com.github.saurfang"
 
-scalaVersion := "2.10.5"
+scalaVersion := "2.11.6"
 crossScalaVersions := Seq("2.10.5", "2.11.6")
 
 scalacOptions ++= Seq("-target:jvm-1.7" )
@@ -16,7 +16,7 @@ libraryDependencies ++= Seq(
 
 //sbt-spark-package
 spName := "saurfang/spark-sas7bdat"
-sparkVersion := "1.5.0"
+sparkVersion := "1.6.0"
 sparkComponents += "sql"
 spAppendScalaVersion := true
 credentials += Credentials(Path.userHome / ".ivy2" / ".sbtcredentials")
@@ -38,3 +38,5 @@ assemblyMergeStrategy in assembly := {
     val oldStrategy = (assemblyMergeStrategy in assembly).value
     oldStrategy(x)
 }
+
+publishTo := Some(Resolver.file("file",  new File(Path.userHome.absolutePath+"/.m2/repository")))
