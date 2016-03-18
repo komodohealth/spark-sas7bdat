@@ -1,5 +1,5 @@
 name := "spark-sas7bdat"
-version := "1.1.4"
+version := "1.1.4-SNAPSHOT"
 organization := "com.github.saurfang"
 
 scalaVersion := "2.11.6"
@@ -16,7 +16,7 @@ libraryDependencies ++= Seq(
 
 //sbt-spark-package
 spName := "saurfang/spark-sas7bdat"
-sparkVersion := "1.6.0"
+sparkVersion := "1.6.1"
 sparkComponents += "sql"
 spAppendScalaVersion := true
 credentials += Credentials(Path.userHome / ".ivy2" / ".sbtcredentials")
@@ -39,4 +39,9 @@ assemblyMergeStrategy in assembly := {
     oldStrategy(x)
 }
 
-publishTo := Some(Resolver.file("file",  new File(Path.userHome.absolutePath+"/.m2/repository")))
+//publishTo := Some(Resolver.file("file",  new File(Path.userHome.absolutePath+"/.m2/repository")))
+publishTo := Some("Local Nexus" at "http://localhost:8081/content/repositories/snapshots")
+
+// fun fact the first parameter in Credentials MUST read EXACTLY:
+// "Sonatype Nexus Repository Manager"
+credentials += Credentials("Sonatype Nexus Repository Manager", "localhost", "deployment", "deployment123")
